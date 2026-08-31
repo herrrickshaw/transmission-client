@@ -1,0 +1,23 @@
+[project]
+name = "transmission-client"
+version = "0.1.0"
+description = "CLI and web GUI client for transmission-daemon's RPC API"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31",
+    "click>=8.1",
+    "flask>=3.0",
+]
+
+[project.scripts]
+transmission-cli = "transmission_client.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["transmission_client*"]
+
+[tool.setuptools.package-data]
+transmission_client = ["templates/*.html", "static/*"]

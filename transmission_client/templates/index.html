@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Transmission</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Transmission</h1>
+    <form id="add-form">
+      <input id="add-source" type="text" placeholder="Magnet link, URL, or .torrent path" required>
+      <button type="submit">Add</button>
+    </form>
+  </header>
+
+  <main>
+    <table id="torrents">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Progress</th>
+          <th>Down</th>
+          <th>Up</th>
+          <th>Size</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="torrents-body">
+        <tr><td colspan="7" class="empty">Loading&hellip;</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

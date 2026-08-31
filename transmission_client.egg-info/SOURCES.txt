@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+transmission_client/__init__.py
+transmission_client/cli.py
+transmission_client/rpc.py
+transmission_client/web.py
+transmission_client.egg-info/PKG-INFO
+transmission_client.egg-info/SOURCES.txt
+transmission_client.egg-info/dependency_links.txt
+transmission_client.egg-info/entry_points.txt
+transmission_client.egg-info/requires.txt
+transmission_client.egg-info/top_level.txt
+transmission_client/static/app.js
+transmission_client/static/style.css
+transmission_client/templates/index.html
