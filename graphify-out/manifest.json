@@ -1,0 +1,62 @@
+{
+  "pyproject.toml": {
+    "mtime": 1786758466.0707238,
+    "seen": 1789193338.0182242,
+    "ast_hash": "16bd28d4601c7dade821ea18924d8cac",
+    "semantic_hash": ""
+  },
+  "transmission_client/__init__.py": {
+    "mtime": 1786758459.9669693,
+    "seen": 1789193338.0182269,
+    "ast_hash": "50becb6e2941bec27d2f90de24888c71",
+    "semantic_hash": ""
+  },
+  "transmission_client/cli.py": {
+    "mtime": 1786758425.440644,
+    "seen": 1789193338.018228,
+    "ast_hash": "47b0d9473388e3b2b4fe7f1605bce187",
+    "semantic_hash": ""
+  },
+  "transmission_client/rpc.py": {
+    "mtime": 1786758386.5641074,
+    "seen": 1789193338.018229,
+    "ast_hash": "9305010f8806951a5509b738e1923f9d",
+    "semantic_hash": ""
+  },
+  "transmission_client/static/app.js": {
+    "mtime": 1786758457.4912841,
+    "seen": 1789193338.01823,
+    "ast_hash": "f331555fa14d778e1e3470fe35fa1dc9",
+    "semantic_hash": ""
+  },
+  "transmission_client/web.py": {
+    "mtime": 1786758436.163944,
+    "seen": 1789193338.0182312,
+    "ast_hash": "919476c1ac08d6c74134cbdc948e383a",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1786758476.0505874,
+    "seen": 1789193338.0182312,
+    "ast_hash": "a9752a0a6a0a1ee99f14335c498c5fa9",
+    "semantic_hash": ""
+  },
+  "requirements.txt": {
+    "mtime": 1786758467.7332287,
+    "seen": 1789193338.018232,
+    "ast_hash": "1d9fe791918959fa8b968e769352a165",
+    "semantic_hash": ""
+  },
+  "transmission_client/templates/index.html": {
+    "mtime": 1786758440.7201786,
+    "seen": 1789193338.018233,
+    "ast_hash": "57045e64b3596020504465ff3c25ab48",
+    "semantic_hash": ""
+  },
+  ".github/workflows/quality-gates.yml": {
+    "mtime": 1789577676.2402506,
+    "seen": 1789968885.319189,
+    "ast_hash": "510f7e392c07f0574ba8a559ba2cdf12",
+    "semantic_hash": ""
+  }
+}
