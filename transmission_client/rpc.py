@@ -131,10 +131,10 @@ class TransmissionClient:
         return self._request("torrent-add", args)
 
     def torrent_start(self, ids: list[int] | None = None) -> None:
-        self._request("torrent-start", {"ids": ids} if ids else None)
+        self._request("torrent-start", {"ids": ids} if ids is not None else None)
 
     def torrent_stop(self, ids: list[int] | None = None) -> None:
-        self._request("torrent-stop", {"ids": ids} if ids else None)
+        self._request("torrent-stop", {"ids": ids} if ids is not None else None)
 
     def torrent_remove(self, ids: list[int], *, delete_local_data: bool = False) -> None:
         self._request(
