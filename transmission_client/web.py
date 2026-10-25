@@ -30,7 +30,11 @@ def create_app(client: TransmissionClient | None = None) -> Flask:
 
     @app.route("/api/torrents", methods=["POST"])
     def api_add_torrent():
-        data = request.get_json(force=True)
+        # Require a real JSON content type: text/plain is a CORS "simple
+        # request" any web page can send cross-site without a preflight.
+        if not request.is_json:
+            return jsonify({"error": "Content-Type must be application/json"}), 415
+        data = request.get_json(silent=True)
         source = (data or {}).get("source", "").strip()
         if not source:
             return jsonify({"error": "source is required"}), 400
