@@ -174,7 +174,11 @@ def test_torrent_add_local_file(client, session, tmp_path):
         ("torrent-start", lambda c: c.torrent_start(), {}),
         ("torrent-stop", lambda c: c.torrent_stop([4, 5]), {"ids": [4, 5]}),
         ("torrent-remove", lambda c: c.torrent_remove([6]), {"ids": [6], "delete-local-data": False}),
-        ("torrent-remove", lambda c: c.torrent_remove([6], delete_local_data=True), {"ids": [6], "delete-local-data": True}),
+        (
+            "torrent-remove",
+            lambda c: c.torrent_remove([6], delete_local_data=True),
+            {"ids": [6], "delete-local-data": True},
+        ),
         ("session-get", lambda c: c.session_get(["version"]), {"fields": ["version"]}),
         ("session-get", lambda c: c.session_get(), {}),
     ],

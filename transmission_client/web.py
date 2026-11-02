@@ -1,12 +1,20 @@
 """Flask web GUI for transmission-daemon's RPC API."""
 from __future__ import annotations
 
+import os
+
 from flask import Flask, jsonify, render_template, request
 
-from .rpc import STATUS_NAMES, TransmissionClient, TransmissionError
+from .rpc import TransmissionClient, TransmissionError, status_name
+
+WEB_HOST = "127.0.0.1"
+DEFAULT_WEB_PORT = 5000
+ENV_WEB_PORT = "TRANSMISSION_WEB_PORT"
+RPC_ERROR_STATUS = 502  # daemon answered but refused the call
 
 
 def create_app(client: TransmissionClient | None = None) -> Flask:
+    """Build the Flask app; ``client`` is injected for tests, default reads ``TRANSMISSION_*`` env."""
     app = Flask(__name__)
     app.config["TRANSMISSION_CLIENT"] = client or TransmissionClient()
 
@@ -15,7 +23,7 @@ def create_app(client: TransmissionClient | None = None) -> Flask:
 
     @app.errorhandler(TransmissionError)
     def handle_rpc_error(exc: TransmissionError):
-        return jsonify({"error": str(exc)}), 502
+        return jsonify({"error": str(exc)}), RPC_ERROR_STATUS
 
     @app.route("/")
     def index():
@@ -25,7 +33,7 @@ def create_app(client: TransmissionClient | None = None) -> Flask:
     def api_list_torrents():
         torrents = get_client().torrent_get()
         for t in torrents:
-            t["statusName"] = STATUS_NAMES.get(t["status"], str(t["status"]))
+            t["statusName"] = status_name(t)
         return jsonify(torrents)
 
     @app.route("/api/torrents", methods=["POST"])
@@ -57,10 +65,9 @@ def create_app(client: TransmissionClient | None = None) -> Flask:
 
 
 def main() -> None:
-    import os
-
+    """Serve the GUI on 127.0.0.1 (port from ``TRANSMISSION_WEB_PORT``, default 5000)."""
     app = create_app()
-    app.run(host="127.0.0.1", port=int(os.environ.get("TRANSMISSION_WEB_PORT", "5000")))
+    app.run(host=WEB_HOST, port=int(os.environ.get(ENV_WEB_PORT, str(DEFAULT_WEB_PORT))))
 
 
 if __name__ == "__main__":
