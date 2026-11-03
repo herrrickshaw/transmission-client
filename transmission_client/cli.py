@@ -2,19 +2,51 @@
 from __future__ import annotations
 
 import sys
+from typing import Any
 
 import click
 import requests
 
-from .rpc import STATUS_NAMES, TransmissionClient, TransmissionError
+from .rpc import TransmissionClient, TransmissionError, status_name
+
+LIST_HEADER = f"{'ID':>4}  {'STATUS':<13} {'DONE':>6}  {'SIZE':>9}  {'DOWN':>9}  {'UP':>9}  NAME"
 
 
 def _human_size(n: float) -> str:
+    """Format a byte count as e.g. ``1.5MB`` (1024-based, one decimal)."""
     for unit in ("B", "KB", "MB", "GB", "TB"):
         if n < 1024:
             return f"{n:.1f}{unit}"
         n /= 1024
     return f"{n:.1f}PB"
+
+
+def format_list_line(t: dict[str, Any]) -> str:
+    """One fixed-width row of ``transmission-cli list`` for torrent dict ``t``."""
+    return (
+        f"{t['id']:>4}  {status_name(t):<13} {t['percentDone'] * 100:5.1f}%  "
+        f"{_human_size(t['totalSize']):>9}  {_human_size(t['rateDownload']) + '/s':>9}  "
+        f"{_human_size(t['rateUpload']) + '/s':>9}  {t['name']}"
+    )
+
+
+def format_info_lines(t: dict[str, Any]) -> list[str]:
+    """The ``transmission-cli info`` report for torrent dict ``t``, one entry per line."""
+    lines = [
+        f"Name:      {t['name']}",
+        f"ID:        {t['id']}",
+        f"Hash:      {t['hashString']}",
+        f"Status:    {status_name(t)}",
+        f"Progress:  {t['percentDone'] * 100:.1f}%",
+        f"Size:      {_human_size(t['totalSize'])}",
+        f"Down/Up:   {_human_size(t['rateDownload'])}/s / {_human_size(t['rateUpload'])}/s",
+        f"Ratio:     {t['uploadRatio']:.2f}",
+        f"Peers:     {t['peersConnected']}",
+        f"Dir:       {t['downloadDir']}",
+    ]
+    if t.get("error"):
+        lines.append(f"Error:     {t['errorString']}")
+    return lines
 
 
 @click.group()
@@ -25,7 +57,8 @@ def _human_size(n: float) -> str:
 @click.pass_context
 def cli(ctx: click.Context, host: str | None, port: int | None, user: str | None, password: str | None) -> None:
     """Talk to a transmission-daemon RPC endpoint."""
-    ctx.obj = TransmissionClient(host=host, port=port, username=user, password=password)
+    if ctx.obj is None:  # tests inject a client via `cli(obj=...)`
+        ctx.obj = TransmissionClient(host=host, port=port, username=user, password=password)
 
 
 @cli.command("list")
@@ -36,14 +69,9 @@ def list_torrents(client: TransmissionClient) -> None:
     if not torrents:
         click.echo("No torrents.")
         return
-    click.echo(f"{'ID':>4}  {'STATUS':<13} {'DONE':>6}  {'SIZE':>9}  {'DOWN':>9}  {'UP':>9}  NAME")
+    click.echo(LIST_HEADER)
     for t in torrents:
-        status = STATUS_NAMES.get(t["status"], str(t["status"]))
-        click.echo(
-            f"{t['id']:>4}  {status:<13} {t['percentDone'] * 100:5.1f}%  "
-            f"{_human_size(t['totalSize']):>9}  {_human_size(t['rateDownload']) + '/s':>9}  "
-            f"{_human_size(t['rateUpload']) + '/s':>9}  {t['name']}"
-        )
+        click.echo(format_list_line(t))
 
 
 @cli.command("info")
@@ -55,20 +83,8 @@ def info(client: TransmissionClient, torrent_id: int) -> None:
     if not torrents:
         click.echo(f"No torrent with id {torrent_id}", err=True)
         raise SystemExit(1)
-    t = torrents[0]
-    status = STATUS_NAMES.get(t["status"], str(t["status"]))
-    click.echo(f"Name:      {t['name']}")
-    click.echo(f"ID:        {t['id']}")
-    click.echo(f"Hash:      {t['hashString']}")
-    click.echo(f"Status:    {status}")
-    click.echo(f"Progress:  {t['percentDone'] * 100:.1f}%")
-    click.echo(f"Size:      {_human_size(t['totalSize'])}")
-    click.echo(f"Down/Up:   {_human_size(t['rateDownload'])}/s / {_human_size(t['rateUpload'])}/s")
-    click.echo(f"Ratio:     {t['uploadRatio']:.2f}")
-    click.echo(f"Peers:     {t['peersConnected']}")
-    click.echo(f"Dir:       {t['downloadDir']}")
-    if t.get("error"):
-        click.echo(f"Error:     {t['errorString']}")
+    for line in format_info_lines(torrents[0]):
+        click.echo(line)
 
 
 @cli.command("add")
@@ -116,6 +132,7 @@ def remove(client: TransmissionClient, torrent_ids: tuple[int, ...], delete_data
 
 
 def main() -> None:
+    """Console-script entry point: run the CLI, mapping RPC/connection errors to exit 1."""
     try:
         cli()
     except TransmissionError as exc:
