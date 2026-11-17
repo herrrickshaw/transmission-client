@@ -2,6 +2,18 @@
 
 Guidance for Claude Code sessions working in this repository.
 
+## Project
+
+Python client for `transmission-daemon`'s RPC API: `transmission_client/rpc.py` (`TransmissionClient`,
+pure helpers), `cli.py` (`transmission-cli`, click), `web.py` (Flask app factory, `python -m transmission_client.web`).
+See `README.md` for commands and configuration.
+
+- Setup: `python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"`
+- Verify before claiming done: `ruff check transmission_client tests && pytest`
+- Network is injected: `TransmissionClient(http=...)` and `web.create_app(client=...)`. Tests use the fakes in
+  `tests/conftest.py` / `tests/test_cli.py`; never hit a real daemon from tests.
+- Never commit RPC credentials; they come from `TRANSMISSION_*` env vars or CLI flags at runtime.
+
 <!-- source-fetch-toolkit:v1 (managed by ~/bin/add_source_fetch_section.py — edit there, not here) -->
 ## Source fetching for data collection & literature surveys
 
