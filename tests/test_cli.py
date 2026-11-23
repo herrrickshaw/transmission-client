@@ -161,3 +161,8 @@ def test_adding_a_missing_torrent_file_is_reported_cleanly(monkeypatch, tmp_path
     monkeypatch.setattr("sys.argv", ["transmission-cli", "add", str(tmp_path / "missing.torrent")])
     with pytest.raises(SystemExit):
         cli_mod.main()
+
+
+def test_info_error_line_follows_the_error_code_not_the_message(run):
+    r = run(["info", "1"], [ok({"torrents": [torrent(error=0, errorString="stale text")]})])
+    assert "Error:" not in r.output
